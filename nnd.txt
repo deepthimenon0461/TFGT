@@ -1,0 +1,102 @@
+@csrf_exempt
+def item(request):
+	#
+	if 'item' in request.POST:
+		s=""
+		p=""
+		c=""
+		sc=""
+		k=""
+		
+		ki=""
+		
+		img=""
+		if "amazon" in str(request.POST):
+ 			p="dasd"
+			s=""
+			b="http"
+			
+			link=request.POST.get('item','')
+			rlinklen=link.find(b)	
+			rlink=link[rlinklen:]
+			r=requests.get(rlink)
+		
+			soup=BeautifulSoup(r.content,"lxml")
+			#return render(request,'item.html',{'item':link})
+			data=soup.find_all("span",{"id":"productTitle"})
+			for i in data:
+
+				s=i.text
+			price=soup.find_all("span",{"class":"a-size-medium a-color-price"})
+			for i in price:
+				k=i.text
+			cat=soup.find_all("a",{'class':'a-link-normal a-color-tertiary'})
+			
+			
+			r=soup.find_all("div",{"id":"imgTagWrapperId"})	
+			q=str(r)
+			b="data-a-dynamic-image"
+			i=q.find(b)+len(b)+4
+			try:			
+				while q[i]!='"':
+					img=img+q[i]
+					i=i+1
+			except:
+				
+				img=""
+			c=str(cat[0].text)
+			sc=str(cat[1].text)
+			
+			#return render(request,'item.html',{'item':s,'price':k,'kk':c,'sc'=sc})	
+		elif "snapdeal" in str(request.POST):
+			p="dasd"
+			s=""
+			link=request.POST.get['item']
+		
+		
+			r=requests.get(link)
+		
+			soup=BeautifulSoup(r.content,"lxml")
+			#return render(request,'item.html',{'item':link})
+			data=soup.find_all("h1",{"itemprop":"name"})
+			for i in data:
+
+				s=i.text
+			price=soup.find_all("span",{"itemprop":"price"})
+			for i in price:
+				k=i.text
+		
+	
+			#return render(request,'item.html',{'item':s,'nn':k,'kk':'Thats all'})	
+ 		
+		if 'computer' in c.lower() :
+			cat=7
+		elif 'watches' in c.lower():
+			cat=19
+		elif 'sports' in c.lower():
+			cat=17
+		elif 'mobiles' in c.lower():
+			cat=13
+		elif 'camera' in c.lower() or 'camera' in sc.lower():
+			cat=2
+		elif 'books' in c.lower():
+			cat=5
+		elif 'musical instuments' in c.lower():
+			cat=3
+		elif 'electronics' in c.lower() and 'accessories' in sc.lower():
+			cat=23
+		elif 'video games' in c.lower():
+			cat=11
+
+
+		n={}
+		n['result']=s
+		n['price']=k
+		n['img']=img
+		n['category']=c
+		n['sub-cat']=sc
+		n['cat']=cat
+		j_d=json.dumps(n)
+		
+		return HttpResponse(json.dumps(n),content_type='application/json')
+		
